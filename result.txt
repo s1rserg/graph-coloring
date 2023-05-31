@@ -1,0 +1,12 @@
+Number of vertices: 4
+Adjacency matrix: 
+0 1 1 1 
+1 0 1 1 
+1 1 0 1 
+1 1 1 0 
+
+Assigned colors: 
+V1: 1 V2: 2 V3: 3 V4: 4 
+
+Method of coloring: 
+backtracking with degree heuristic
