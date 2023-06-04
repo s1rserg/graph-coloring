@@ -2,74 +2,35 @@
 #include "Form.h"
 
 System::Void CppCLRWinFormsProject::Form::button1_Click(System::Object^ sender, System::EventArgs^ e) {
+    clear();
     int size = Convert::ToInt32(matrixSize->Value);
     if (!scanmatrix(size)) return;
-
-    solutionLabel->Text = "";
-    fileTextBox->Visible = false;
-    String^ solutionText = "";
 
     if (greedyRB->Checked) {
         algorithmName = 'g';
         GreedyAlgorithm algorithm;
         graph->setColors(algorithm.solve(graph->getMatrix()));
-
-        solutionText += "Хроматичне число: " + algorithm.getChromaticNumber() + "\n";
-        for (int i = 0; i < size; i++) {
-            solutionText += "V" + (i + 1) + ": " + graph->getElementColors(i) + "    ";
-        }
-        solutionText += "\n\nПорядок:\n";
-        for (int i = 0; i < size; i++) {
-            solutionText += "V" + (i + 1) + ": " + (algorithm.getElementOrder(i) + 1) + "    ";
-        }
-        solutionText += "\n\nК-сть перебраних кольорів: " + algorithm.getColorsTried();
-        solutionLabel->Text = solutionText;
-        pictureBox1->Invalidate();
-        textButton->Visible = true;
-        textButton->Enabled = true;
+        output(&algorithm, size);
+        solutionTB->Text += "\r\n\r\nК-сть перебраних кольорів: " + algorithm.getColorsTried();
     }
-    else if (mrvRB->Checked) {
-        algorithmName = 'm';
-        BacktrackingAlgorithm algorithm('m');
+    else if (mrvRB->Checked || degreeRB->Checked) {
+        BacktrackingAlgorithm algorithm;
+        if (mrvRB->Checked) {
+            algorithmName = 'm';
+            algorithm.setHeuristic(true);
+        }
+        else {
+            algorithmName = 'd';
+            algorithm.setHeuristic(false);
+        }
         graph->setColors(algorithm.solve(graph->getMatrix()));
-
-        solutionText += "Хроматичне число: " + algorithm.getChromaticNumber() + "\n";
-        for (int i = 0; i < size; i++) {
-            solutionText += "V" + (i + 1) + ": " + graph->getElementColors(i) + "    ";
-        }
-        solutionText += "\n\nПорядок:\n";
-        for (int i = 0; i < size; i++) {
-            solutionText += "V" + (i + 1) + ": " + (algorithm.getElementOrder(i) + 1) + "    ";
-        }
-        solutionText += "\n\nК-сть вузлів у дереві пошуку: " + algorithm.getVerticesAssigned();
-        solutionText += "\nПовернень: " + algorithm.getComebacks();
-        solutionLabel->Text = solutionText;
-        pictureBox1->Invalidate();
-        textButton->Visible = true;
-        textButton->Enabled = true;
-    }
-    else if(degreeRB->Checked) {
-        algorithmName = 'd';
-        BacktrackingAlgorithm algorithm('d');
-        graph->setColors(algorithm.solve(graph->getMatrix()));
-
-        solutionText += "Хроматичне число: " + algorithm.getChromaticNumber() + "\n";
-        for (int i = 0; i < size; i++) {
-            solutionText += "V" + (i + 1) + ": " + graph->getElementColors(i) + "    ";
-        }
-        solutionText += "\n\nПорядок:\n";
-        for (int i = 0; i < size; i++) {
-            solutionText += "V" + (i + 1) + ": " + (algorithm.getElementOrder(i) + 1) + "    ";
-        }
-        solutionText += "\n\nК-сть вузлів у дереві пошуку: " + algorithm.getVerticesAssigned();
-        solutionText += "\nПовернень: " + algorithm.getComebacks();
-        solutionLabel->Text = solutionText;
-        pictureBox1->Invalidate();
-        textButton->Visible = true;
-        textButton->Enabled = true;
+        if (!algorithm.getSuccess()) { solutionTB->Text += "Перевищена допустима кількість вузлів у дереві пошуку"; return; }
+        output(&algorithm, size);
+        solutionTB->Text += "\r\n\r\nК-сть вузлів у дереві пошуку: " + algorithm.getVerticesAssigned();
+        solutionTB->Text += "\r\nПовернень: " + algorithm.getComebacks();
     }
     else {
-        solutionLabel->Text = "Оберіть, будь ласка, операцію";
+        solutionTB->Text = "Оберіть, будь ласка, метод розфарбування";
     }
 
 }
@@ -83,7 +44,7 @@ bool CppCLRWinFormsProject::Form::scanmatrix(int size) {
             }
             catch (...) {
                 matrixTable->Rows[i]->Cells[j]->Style->BackColor = Color::Red;
-                solutionLabel->Text = "Некоректні символи у матриці суміжності. Будь ласка, видаліть їх та спробуйте ще раз";
+                solutionTB->Text = "Некоректні символи у матриці суміжності. Будь ласка, видаліть їх та спробуйте ще раз";
                 return false;
             }
             matrixTable->Rows[i]->Cells[j]->Style->BackColor = Color::White;
@@ -93,13 +54,13 @@ bool CppCLRWinFormsProject::Form::scanmatrix(int size) {
         for (int j = 0; j < matrix.size(); ++j) {
             if (matrix[i][j] != 1 && matrix[i][j] != 0) {
                 matrixTable->Rows[i]->Cells[j]->Style->BackColor = Color::Red;
-                solutionLabel->Text = "Некоректні цифри у матриці суміжності. Будь ласка, вводьте лише або 0, або 1.";
+                solutionTB->Text = "Некоректні цифри у матриці суміжності. Будь ласка, вводьте лише або 0, або 1.";
                 return false;
             }
             if (matrix[i][j] == 1 && matrix[j][i] != 1) {
                 matrixTable->Rows[i]->Cells[j]->Style->BackColor = Color::Red;
                 matrixTable->Rows[j]->Cells[i]->Style->BackColor = Color::Red;
-                solutionLabel->Text = "Матриця суміжності є некоректною. Значення у рядку " + (i + 1) + " стовпці " + (j + 1) + " та у рядку " + (j + 1) + " стовпці " + (i + 1) + " мають бути ідентичними.";
+                solutionTB->Text = "Матриця суміжності є некоректною. Значення у рядку " + (i + 1) + " стовпці " + (j + 1) + " та у рядку " + (j + 1) + " стовпці " + (i + 1) + " мають бути ідентичними.";
                 return false;
             }
         }
@@ -185,10 +146,13 @@ void CppCLRWinFormsProject::Form::DrawGraph(System::Object^ sender, System::Wind
     }
 }
 
+
+
+
 System::Void CppCLRWinFormsProject::Form::textButton_Click(System::Object^ sender, System::EventArgs^ e) {
-    fileTextBox->Visible = true;
+    fileText->Visible = true;
     if (!graph->fileoutput()) {
-        fileTextBox->Text = "Помилка при відкритті файлу";
+        fileText->Text = "Помилка при відкритті файлу";
         return;
     }
 
@@ -214,11 +178,11 @@ System::Void CppCLRWinFormsProject::Form::textButton_Click(System::Object^ sende
 
     }
     else {
-        fileTextBox->Text = "Помилка при відкритті файлу";
+        fileText->Text = "Помилка при відкритті файлу";
         return;
     }
 
-    fileTextBox->Text = "Результати збережено";
+    fileText->Text = " Результати збережено ";
 }
 
 System::Void CppCLRWinFormsProject::Form::Form1_Load(System::Object^ sender, System::EventArgs^ e) {
@@ -235,4 +199,34 @@ System::Void CppCLRWinFormsProject::Form::numericUpDown1_ValueChanged(System::Ob
 
 System::Void CppCLRWinFormsProject::Form::matrix_table_CellValueChanged(System::Object^ sender, DataGridViewCellEventArgs^ e) {
     matrixTable->AutoResizeColumns();
+}
+
+void CppCLRWinFormsProject::Form::output(Algorithm* algorithm, int size){
+    System::String^ solutionText = "";
+    solutionText += "Хроматичне число: " + algorithm->getChromaticNumber() + "\r\n";
+    for (int i = 0; i < size - 1; i++) {
+        solutionText += "V" + (i + 1) + ": " + graph->getElementColors(i) + "    ";
+    }
+    solutionText += "V" + (size) + ": " + graph->getElementColors(size - 1);
+    solutionText += "\r\n\r\nПорядок:\r\n";
+    for (int i = 0; i < size - 1; i++) {
+        solutionText += "V" + (i + 1) + ": " + (algorithm->getElementOrder(i) + 1) + "    ";
+    }
+    solutionText += "V" + (size) + ": " + (algorithm->getElementOrder(size - 1) + 1);
+    solutionTB->Text = solutionText;
+    pictureBox1->Invalidate();
+    textButton->Visible = true;
+    textButton->Enabled = true;
+}
+
+void CppCLRWinFormsProject::Form::clear() {
+    System::Drawing::Color customColor = System::Drawing::Color::FromArgb(192, 255, 255);
+    System::Drawing::Graphics^ g = pictureBox1->CreateGraphics();
+    g->Clear(customColor);
+    delete g;
+    solutionTB->Text = "";
+    fileText->Visible = false;
+    textButton->Visible = false;
+    textButton->Enabled = false;
+
 }

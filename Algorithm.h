@@ -18,23 +18,18 @@ public:
 
 class GreedyAlgorithm: public Algorithm {
     int colorsTried;
-
 public:
     int getColorsTried();
     vector<int> solve(vector<vector<int>>& matrix);
 };
 
 class BacktrackingAlgorithm : public Algorithm {
-    char heuristic;
+    bool heuristic; //true = mrv, false = degree
     int comebacks;
     int verticesAssigned;
-
+    bool success;
 public:
-    BacktrackingAlgorithm(char h) {
-        heuristic = h;
-        comebacks = 0;
-        verticesAssigned = 0;
-    };
+    void setHeuristic(bool h);
     int getVerticesAssigned();
     int getComebacks();
     vector<int> solve(vector<vector<int>>& matrix);
@@ -42,4 +37,5 @@ public:
     int getVertexWithMRV(vector<vector<int>>& matrix, vector<int>& colors);
     int getVertexWithDegree(vector<vector<int>>& matrix, vector<int>& colors);
     bool assignColors(vector<vector<int>>& matrix, vector<int>& colors, int vertex, int max_colors, vector<int>& testOrder);
+    bool getSuccess();
 };

@@ -31,42 +31,34 @@ namespace CppCLRWinFormsProject {
     private:
         System::Windows::Forms::NumericUpDown^ matrixSize;
         System::Windows::Forms::Label^ numVerticesLabel;
-
-
-
-
         System::Windows::Forms::Button^ colorBtn;
         System::Windows::Forms::DataGridView^ matrixTable;
         System::Windows::Forms::Label^ matrixLabel;
         System::ComponentModel::Container^ components;
-        System::Windows::Forms::Label^ solutionLabel;
+
         System::Windows::Forms::PictureBox^ pictureBox1;
-    private: System::Windows::Forms::Label^ GraphLabel;
-
-    private: System::Windows::Forms::Label^ solLabel;
-    private: System::Windows::Forms::RadioButton^ greedyRB;
-    private: System::Windows::Forms::RadioButton^ mrvRB;
-    private: System::Windows::Forms::RadioButton^ degreeRB;
-    private: System::Windows::Forms::Panel^ rbPanel;
-    private: System::Windows::Forms::Button^ textButton;
-
-
-
-           Graph* graph;
-    private: System::Windows::Forms::TextBox^ fileTextBox;
+        System::Windows::Forms::Label^ GraphLabel;
+        System::Windows::Forms::Label^ solLabel;
+        System::Windows::Forms::RadioButton^ greedyRB;
+        System::Windows::Forms::RadioButton^ mrvRB;
+        System::Windows::Forms::RadioButton^ degreeRB;
+        System::Windows::Forms::Panel^ rbPanel;
+        System::Windows::Forms::Button^ textButton;
+        System::Windows::Forms::Label^ fileText;
+        Graph* graph;
+    private: System::Windows::Forms::TextBox^ solutionTB;
 
            char algorithmName;
 
 #pragma region Windows Form Designer generated code
 
            void InitializeComponent(void) {
-               System::Windows::Forms::DataGridViewCellStyle^ dataGridViewCellStyle1 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
+               System::Windows::Forms::DataGridViewCellStyle^ dataGridViewCellStyle6 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
                this->matrixSize = (gcnew System::Windows::Forms::NumericUpDown());
                this->numVerticesLabel = (gcnew System::Windows::Forms::Label());
                this->colorBtn = (gcnew System::Windows::Forms::Button());
                this->matrixTable = (gcnew System::Windows::Forms::DataGridView());
                this->matrixLabel = (gcnew System::Windows::Forms::Label());
-               this->solutionLabel = (gcnew System::Windows::Forms::Label());
                this->pictureBox1 = (gcnew System::Windows::Forms::PictureBox());
                this->GraphLabel = (gcnew System::Windows::Forms::Label());
                this->solLabel = (gcnew System::Windows::Forms::Label());
@@ -75,7 +67,8 @@ namespace CppCLRWinFormsProject {
                this->degreeRB = (gcnew System::Windows::Forms::RadioButton());
                this->rbPanel = (gcnew System::Windows::Forms::Panel());
                this->textButton = (gcnew System::Windows::Forms::Button());
-               this->fileTextBox = (gcnew System::Windows::Forms::TextBox());
+               this->fileText = (gcnew System::Windows::Forms::Label());
+               this->solutionTB = (gcnew System::Windows::Forms::TextBox());
                (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->matrixSize))->BeginInit();
                (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->matrixTable))->BeginInit();
                (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
@@ -129,15 +122,15 @@ namespace CppCLRWinFormsProject {
                this->matrixTable->AllowUserToResizeRows = false;
                this->matrixTable->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
                this->matrixTable->ColumnHeadersVisible = false;
-               dataGridViewCellStyle1->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
-               dataGridViewCellStyle1->BackColor = System::Drawing::SystemColors::Window;
-               dataGridViewCellStyle1->Font = (gcnew System::Drawing::Font(L"Times New Roman", 14.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+               dataGridViewCellStyle6->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
+               dataGridViewCellStyle6->BackColor = System::Drawing::SystemColors::Window;
+               dataGridViewCellStyle6->Font = (gcnew System::Drawing::Font(L"Times New Roman", 14.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                    static_cast<System::Byte>(204)));
-               dataGridViewCellStyle1->ForeColor = System::Drawing::SystemColors::ControlText;
-               dataGridViewCellStyle1->SelectionBackColor = System::Drawing::SystemColors::GradientInactiveCaption;
-               dataGridViewCellStyle1->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
-               dataGridViewCellStyle1->WrapMode = System::Windows::Forms::DataGridViewTriState::False;
-               this->matrixTable->DefaultCellStyle = dataGridViewCellStyle1;
+               dataGridViewCellStyle6->ForeColor = System::Drawing::SystemColors::ControlText;
+               dataGridViewCellStyle6->SelectionBackColor = System::Drawing::SystemColors::GradientInactiveCaption;
+               dataGridViewCellStyle6->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
+               dataGridViewCellStyle6->WrapMode = System::Windows::Forms::DataGridViewTriState::False;
+               this->matrixTable->DefaultCellStyle = dataGridViewCellStyle6;
                this->matrixTable->Location = System::Drawing::Point(16, 120);
                this->matrixTable->Name = L"matrixTable";
                this->matrixTable->RowHeadersVisible = false;
@@ -155,19 +148,6 @@ namespace CppCLRWinFormsProject {
                this->matrixLabel->Size = System::Drawing::Size(190, 23);
                this->matrixLabel->TabIndex = 12;
                this->matrixLabel->Text = L"Матриця суміжності";
-               // 
-               // solutionLabel
-               // 
-               this->solutionLabel->AutoSize = true;
-               this->solutionLabel->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
-               this->solutionLabel->Font = (gcnew System::Drawing::Font(L"Times New Roman", 15.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-                   static_cast<System::Byte>(204)));
-               this->solutionLabel->Location = System::Drawing::Point(901, 177);
-               this->solutionLabel->MaximumSize = System::Drawing::Size(350, 350);
-               this->solutionLabel->MinimumSize = System::Drawing::Size(350, 350);
-               this->solutionLabel->Name = L"solutionLabel";
-               this->solutionLabel->Size = System::Drawing::Size(350, 350);
-               this->solutionLabel->TabIndex = 13;
                // 
                // pictureBox1
                // 
@@ -262,21 +242,34 @@ namespace CppCLRWinFormsProject {
                this->textButton->Visible = false;
                this->textButton->Click += gcnew System::EventHandler(this, &Form::textButton_Click);
                // 
-               // fileTextBox
+               // fileText
                // 
-               this->fileTextBox->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(192)), static_cast<System::Int32>(static_cast<System::Byte>(255)),
-                   static_cast<System::Int32>(static_cast<System::Byte>(255)));
-               this->fileTextBox->Font = (gcnew System::Drawing::Font(L"Times New Roman", 15.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+               this->fileText->AutoSize = true;
+               this->fileText->Font = (gcnew System::Drawing::Font(L"Times New Roman", 15.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                    static_cast<System::Byte>(204)));
-               this->fileTextBox->Location = System::Drawing::Point(901, 607);
-               this->fileTextBox->MaximumSize = System::Drawing::Size(350, 60);
-               this->fileTextBox->MinimumSize = System::Drawing::Size(350, 60);
-               this->fileTextBox->Name = L"fileTextBox";
-               this->fileTextBox->ReadOnly = true;
-               this->fileTextBox->Size = System::Drawing::Size(350, 32);
-               this->fileTextBox->TabIndex = 19;
-               this->fileTextBox->TextAlign = System::Windows::Forms::HorizontalAlignment::Center;
-               this->fileTextBox->Visible = false;
+               this->fileText->Location = System::Drawing::Point(976, 617);
+               this->fileText->Name = L"fileText";
+               this->fileText->Size = System::Drawing::Size(210, 23);
+               this->fileText->TabIndex = 20;
+               this->fileText->Text = L" Результати збережено ";
+               this->fileText->Visible = false;
+               // 
+               // solutionTB
+               // 
+               this->solutionTB->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(192)), static_cast<System::Int32>(static_cast<System::Byte>(255)),
+                   static_cast<System::Int32>(static_cast<System::Byte>(255)));
+               this->solutionTB->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
+               this->solutionTB->Font = (gcnew System::Drawing::Font(L"Times New Roman", 15.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+                   static_cast<System::Byte>(204)));
+               this->solutionTB->Location = System::Drawing::Point(901, 180);
+               this->solutionTB->MaximumSize = System::Drawing::Size(350, 350);
+               this->solutionTB->MinimumSize = System::Drawing::Size(350, 350);
+               this->solutionTB->Multiline = true;
+               this->solutionTB->Name = L"solutionTB";
+               this->solutionTB->ReadOnly = true;
+               this->solutionTB->ScrollBars = System::Windows::Forms::ScrollBars::Vertical;
+               this->solutionTB->Size = System::Drawing::Size(350, 350);
+               this->solutionTB->TabIndex = 21;
                // 
                // Form
                // 
@@ -285,12 +278,12 @@ namespace CppCLRWinFormsProject {
                this->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(192)), static_cast<System::Int32>(static_cast<System::Byte>(255)),
                    static_cast<System::Int32>(static_cast<System::Byte>(255)));
                this->ClientSize = System::Drawing::Size(1268, 714);
-               this->Controls->Add(this->fileTextBox);
+               this->Controls->Add(this->solutionTB);
+               this->Controls->Add(this->fileText);
                this->Controls->Add(this->textButton);
                this->Controls->Add(this->solLabel);
                this->Controls->Add(this->GraphLabel);
                this->Controls->Add(this->pictureBox1);
-               this->Controls->Add(this->solutionLabel);
                this->Controls->Add(this->matrixLabel);
                this->Controls->Add(this->colorBtn);
                this->Controls->Add(this->matrixTable);
@@ -327,5 +320,9 @@ namespace CppCLRWinFormsProject {
         void DrawGraph(System::Object^ sender, System::Windows::Forms::PaintEventArgs^ e);
 
         System::Void textButton_Click(System::Object^ sender, System::EventArgs^ e);
+
+        void output(Algorithm* algorithm, int size);
+
+        void clear();
 };
 }

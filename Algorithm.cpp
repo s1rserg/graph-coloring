@@ -26,10 +26,10 @@ int BacktrackingAlgorithm::getVertexWithDegree(vector<vector<int>>& matrix, vect
     int maxDegree = 0, nextVertex = -1;
 
     for (int i = 0; i < matrix.size(); i++) {
-        if (colors.at(i) == 0) {
+        if (colors[i] == 0) {
             int degree = 0;
             for (int j = 0; j < matrix.size(); j++) {
-                if (matrix.at(i).at(j)) degree++;
+                if (matrix[i][j]) degree++;
             }
             if (degree > maxDegree) {
                 maxDegree = degree;
@@ -40,17 +40,22 @@ int BacktrackingAlgorithm::getVertexWithDegree(vector<vector<int>>& matrix, vect
             }
         }
     }
+
     return nextVertex;
 }
 
 bool BacktrackingAlgorithm::assignColors(vector<vector<int>>& matrix, vector<int>& colors, int vertex, int max_colors, vector<int>& testOrder) {
     if (vertex == matrix.size()) return true;
     int nextVertex;
-    if (heuristic == 'm') nextVertex = getVertexWithMRV(matrix, colors);
+    if (heuristic) nextVertex = getVertexWithMRV(matrix, colors);
     else nextVertex = getVertexWithDegree(matrix, colors);
     if (nextVertex == -1) return false;
     testOrder.push_back(nextVertex);
     verticesAssigned++;
+    if (verticesAssigned > 10000000) {
+        success = false;
+        return false;
+    }
 
     for (int color = 1; color <= max_colors; color++) {
         if (isSafe(nextVertex, matrix, colors, color)) {
@@ -65,8 +70,11 @@ bool BacktrackingAlgorithm::assignColors(vector<vector<int>>& matrix, vector<int
 }
 
 vector<int> BacktrackingAlgorithm::solve(vector<vector<int>>& matrix) {
-    int n = matrix.size();
-    int numColors = matrix.size();
+    int n = int(matrix.size());
+    int numColors = int(matrix.size());
+    comebacks = 0;
+    verticesAssigned = 0;
+    success = true;
     vector<int> colors(n, 0);
     vector<int> testColors(n, 0);
     vector<int> testOrder;
@@ -76,19 +84,19 @@ vector<int> BacktrackingAlgorithm::solve(vector<vector<int>>& matrix) {
             colors = testColors;
             order = testOrder;
 
-            chromaticNumber = 0;
-            for (int i = 0; i < n; i++) {
-                if (colors[i] > chromaticNumber) {
-                    chromaticNumber = colors[i];
+            chromaticNumber = 1;
+            for (int color: colors) {
+                if (color > chromaticNumber) {
+                    chromaticNumber = color;
                 }
             }
-            numColors = --chromaticNumber;
+            numColors = chromaticNumber - 1;
         }
         else {
-            chromaticNumber = 0;
-            for (int i = 0; i < n; i++) {
-                if (colors[i] > chromaticNumber) {
-                    chromaticNumber = colors[i];
+            chromaticNumber = 1;
+            for (int color: colors) {
+                if (color > chromaticNumber) {
+                    chromaticNumber = color;
                 }
             }
             return colors;
@@ -100,33 +108,29 @@ vector<int> BacktrackingAlgorithm::solve(vector<vector<int>>& matrix) {
 }
 
 vector<int> GreedyAlgorithm::solve(vector<vector<int>>& matrix) {
-    int n = matrix.size();
+    colorsTried = 1;
+    int n = int(matrix.size());
     vector<int> colors(n, 0);
     colors[0] = 1;
-    colorsTried = 1;
 
     for (int i = 1; i < n; i++) {
+        order.push_back(i);
         unordered_set<int> used_colors(n);
         for (int j = 0; j < n; j++) if (matrix[i][j] && colors[j] != 0) used_colors.insert(colors[j]);
         colors[i] = 1;
-        colorsTried++;
         while (used_colors.count(colors[i]) > 0) {
             colors[i]++;
             colorsTried++;
         }
+        colorsTried++;
     }
-    chromaticNumber = 0;
-    for (int i = 0; i < n; i++) {
-        order.push_back(i);
-        if (colors[i] > chromaticNumber) {
-            chromaticNumber = colors[i];
+    chromaticNumber = 1;
+    for (int color : colors) {
+        if (color > chromaticNumber) {
+            chromaticNumber = color;
         }
     }
     return colors;
-}
-
-int GreedyAlgorithm::getColorsTried() {
-    return colorsTried;
 }
 
 int BacktrackingAlgorithm::getVerticesAssigned() {
@@ -146,4 +150,16 @@ int Algorithm::getElementOrder(int i) {
         return order[i];
     }
     return 0;
+}
+
+int GreedyAlgorithm::getColorsTried() {
+    return colorsTried;
+}
+
+bool BacktrackingAlgorithm::getSuccess() {
+    return success;
+}
+
+void BacktrackingAlgorithm::setHeuristic(bool h) {
+    heuristic = h;
 }
